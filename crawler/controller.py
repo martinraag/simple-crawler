@@ -85,6 +85,9 @@ async def main(domain, file_path):
                 if not path:
                     log.info(f"Finished crawling {domain=} pages={len(visited)}")
                     break
+                if path in visited:
+                    log.debug(f"Skipping path already visited {path=}")
+                    continue
                 log.debug(f"Schedule crawl {path=}")
                 visited.add(path)
                 schedule_crawl(path)
