@@ -1,9 +1,29 @@
 import argparse
+import logging
 from urllib.parse import urlparse
+import sys
 
 from validators import domain
 
 from crawler.controller import crawl
+
+
+log = logging.getLogger(__name__)
+
+
+def setup_logging(verbose):
+    logger = logging.getLogger("crawler")
+    handler = logging.StreamHandler(sys.stdout)
+    formatter = logging.Formatter(
+        "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    )
+    handler.setFormatter(formatter)
+    handler.setLevel(logging.DEBUG)
+    logger.addHandler(handler)
+    if verbose:
+        logger.setLevel(logging.DEBUG)
+    else:
+        logger.setLevel(logging.INFO)
 
 
 def valid_domain(value):
@@ -16,8 +36,15 @@ def cli():
     parser = argparse.ArgumentParser()
     parser.add_argument("domain", help="Domain to crawl.", type=valid_domain)
     parser.add_argument("file_path", help="Path to output file.")
+    parser.add_argument("--verbose", action="store_true", help="Enable debug logging")
     args = parser.parse_args()
-    crawl(args.domain, args.file_path)
+    setup_logging(args.verbose)
+    log.info(f"Crawl {args.domain=} {args.file_path=}")
+    try:
+        crawl(args.domain, args.file_path)
+    except Exception as err:
+        log.exception(err)
+        sys.exit(1)
 
 
 if __name__ == "__main__":

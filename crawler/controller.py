@@ -1,10 +1,14 @@
 import asyncio
 from itertools import chain
 from functools import partial
+from logging import getLogger
 
 from crawler.file_writer import create_file_writer
 from crawler.http_client import create_session
 from crawler.parser import create_parser
+
+
+log = getLogger(__name__)
 
 
 def format_results(path, links):
@@ -28,10 +32,10 @@ async def crawl_path(
 def on_task_done(tasks, request_queue, done_event, task):
     if task in tasks:
         tasks.remove(task)
-    # print(f"tasks - {len(tasks)} ; queue - {request_queue.qsize()}")
     if not tasks and request_queue.empty():
-        # print("set done event")
+        log.debug(f"Crawl tasks and request queue exhausted")
         done_event.set()
+    log.debug(f"Task complete running={len(tasks)} queued={request_queue.qsize()}")
 
 
 def scheduler(request_queue, fetch_text, parse_links, write_to_file, visited):
@@ -79,7 +83,9 @@ async def main(domain, file_path):
             while True:
                 path = await next_request_or_done(request_queue, tasks_done)
                 if not path:
+                    log.info(f"Finished crawling {domain=} pages={len(visited)}")
                     break
+                log.debug(f"Schedule crawl {path=}")
                 visited.add(path)
                 schedule_crawl(path)
 

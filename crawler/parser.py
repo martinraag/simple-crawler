@@ -2,9 +2,13 @@ import asyncio
 from concurrent.futures import ProcessPoolExecutor
 from contextlib import contextmanager
 from functools import partial
+from logging import getLogger
 from urllib.parse import urlparse
 
 from bs4 import BeautifulSoup
+
+
+log = getLogger(__name__)
 
 
 def filter_links(links, domain):
