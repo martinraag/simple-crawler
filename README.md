@@ -34,6 +34,22 @@ pip install dist/crawler-*.whl
 crawler hypercritical.co sitemap.txt
 ```
 
+The output file will include one line per crawled path under the domain. Each line is a comma
+separated list of paths, where the first value is the path of the crawled page and subsequent values
+are all links found on the page.
+
+For example:
+
+```
+/,/foo,/bar
+/foo,/bar,/baz
+/bar,/foo
+/baz,/foo
+```
+
+The page at path `/` includes links to `/foo` and `/bar`, the page at path `/foo` includes links to
+`/bar` and `/baz` etc.
+
 ## Development setup
 
 Development requires the same dependencies as are required for running the application, described
