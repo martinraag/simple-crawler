@@ -2,6 +2,11 @@
 *.egg
 *.egg-info
 __pycache__/
+.venv
+dist/
+
+
+debug-output.txt
 
 # Editor
 .vscode
