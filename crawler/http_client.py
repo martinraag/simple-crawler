@@ -12,6 +12,9 @@ log = getLogger(__name__)
 
 
 async def parse_robots(session, base):
+    """Fetches and parses the robots.txt file from a given base URL. Returns an instance of
+    RobotFileParser."""
+
     url = urljoin(base, "robots.txt")
     async with session.get(url) as response:
         text = await response.text()
@@ -21,6 +24,9 @@ async def parse_robots(session, base):
 
 
 async def fetch_text(session, url):
+    """Fetches the text content of a given url. Yields None if response content type is not
+    text/html, otherwise a string of the content."""
+
     log.debug(f"Crawl {url=}")
     async with session.head(url) as response:
         if not "text/html" in response.headers.get("content-type", ""):
@@ -31,6 +37,9 @@ async def fetch_text(session, url):
 
 
 async def fetch_text_from_path(session, base, robots, path):
+    """Wraps the fetch function, formats the absolute URL and validates that crawling it is allowed
+    by domains robots.txt file."""
+
     url = urljoin(base, path)
     if not robots.can_fetch(USER_AGENT, url):
         log.warning(f"Skipping url due to Disallow for robots {url=}")
@@ -40,6 +49,9 @@ async def fetch_text_from_path(session, base, robots, path):
 
 @asynccontextmanager
 async def create_session(domain):
+    """A context manager that creates an HTTP client session and yields a coroutine to fetch the
+    text content from a given path."""
+
     base = f"https://{domain}"
     headers = {"user-agent": USER_AGENT}
     session = aiohttp.ClientSession(headers=headers)

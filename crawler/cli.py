@@ -12,6 +12,9 @@ log = logging.getLogger(__name__)
 
 
 def setup_logging(verbose):
+    """Configures the root logger to write to stdout with info level or debug of verbose
+    options is set to True."""
+
     logger = logging.getLogger("crawler")
     handler = logging.StreamHandler(sys.stdout)
     formatter = logging.Formatter(
@@ -27,12 +30,16 @@ def setup_logging(verbose):
 
 
 def valid_domain(value):
+    """Ensures a string is a valid domain name or raises ArgumentTypeError."""
+
     if not domain(value):
         raise argparse.ArgumentTypeError(f"Value {value} is not a valid domain.")
     return value
 
 
 def cli():
+    """Entry point for the command line interface. Parses arguments and starts crawler."""
+
     parser = argparse.ArgumentParser()
     parser.add_argument("domain", help="Domain to crawl.", type=valid_domain)
     parser.add_argument("file_path", help="Path to output file.")
