@@ -58,7 +58,8 @@ async def create_session(domain):
 
     base = f"https://{domain}"
     headers = {"user-agent": USER_AGENT}
-    session = aiohttp.ClientSession(headers=headers)
+    timeout = aiohttp.ClientTimeout(total=30)
+    session = aiohttp.ClientSession(headers=headers, timeout=timeout)
     robots = await parse_robots(session, base)
     try:
         yield partial(fetch_text_from_path, session, base, robots)
