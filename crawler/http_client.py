@@ -17,9 +17,13 @@ async def parse_robots(session, base):
 
     url = urljoin(base, "robots.txt")
     async with session.get(url) as response:
+        status = response.status
         text = await response.text()
     robot_parser = RobotFileParser()
-    robot_parser.parse(text.splitlines())
+    if status == 200:
+        robot_parser.parse(text.splitlines())
+    else:
+        robot_parser.allow_all = True
     return robot_parser
 
 
